@@ -18,6 +18,7 @@ before_deploy:
   - make build GOOS=windows GOARCH=amd64
   - make build GOOS=linux GOARCH=amd64
   - make build GOOS=darwin GOARCH=amd64
+  - echo "Releasing version $(git describe --always)"
 deploy:
   provider: releases
   skip_cleanup: true
@@ -26,7 +27,7 @@ deploy:
   file_glob: true
   file:
     - cmd/ssl-checker/bin/ssl-checker-v*-linux-amd64
-    - cmd/ssl-checker/bin/ssl-checker-v*-windows-amd64
+    - cmd/ssl-checker/bin/ssl-checker-v*-windows-amd64.exe
     - cmd/ssl-checker/bin/ssl-checker-v*-darwin-amd64
   on:
     repo: bitnami-labs/healthcheck-tools

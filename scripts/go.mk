@@ -3,7 +3,7 @@ ROOT_PKG_DIR=${GOPATH}/src/$(ROOT_PKG)
 
 # For creating the proper filename for later uploading with Travis
 EXECUTABLE_FLAG=
-VERSION=$(shell git describe --always --long --dirty)
+VERSION=$(shell git describe --always)
 ifdef GOOS
   ifdef GOARCH
 	EXECUTABLE_FLAG:=-o $(TOOL)-v$(VERSION)-$(GOOS)-$(GOARCH)
