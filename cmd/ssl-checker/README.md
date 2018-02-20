@@ -4,7 +4,7 @@ _ssl-checker_ performs a set of health checks in your web application to detect 
 ## Installation
 
 ```
-$> go get github.com/bitnami-labs/healthcheck-tools/cmd/ssl-checker...
+$> go get github.com/bitnami-labs/healthcheck-tools/cmd/ssl-checker/...
 ```
 
 ## Building from source
