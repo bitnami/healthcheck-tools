@@ -7,17 +7,28 @@ import (
 	"os"
 )
 
+var (
+	// VERSION will be overwritten automatically by the build system
+	VERSION = "devel"
+)
+
 func main() {
 	var apacheRoot string
 	var apacheConf string
 	var hostname string
 	var port int
+	var getVersion bool
 	flag.StringVar(&apacheRoot, "apache-root", "/opt/bitnami/apache2/", "Root of Apache installation")
 	flag.StringVar(&apacheConf, "apache-conf", "/opt/bitnami/apache2/conf/httpd.conf",
 		"Path to the root Apache configuration file")
 	flag.StringVar(&hostname, "hostname", "", "Web application hostname")
 	flag.IntVar(&port, "port", 443, "Web application port")
+	flag.BoolVar(&getVersion, "version", false, "Show current version")
 	flag.Parse()
+	if getVersion {
+		fmt.Println(VERSION)
+		os.Exit(0)
+	}
 	if hostname == "" {
 		log.Fatal("-hostname flag must be set")
 	}

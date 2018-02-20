@@ -26,6 +26,12 @@ lint:
 lint-%:
 	make -C cmd/$(*F) test
 
+install:
+	@$(MAKE) -s $(addprefix install-, $(TOOLS))
+
+install-%:
+	make -C cmd/$(*F) install
+
 clean:
 	@$(MAKE) -s $(addprefix clean-, $(TOOLS))
 
