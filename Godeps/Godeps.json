@@ -1,0 +1,10 @@
+{
+	"ImportPath": "github.com/bitnami-labs/healthcheck-tools",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Packages": [
+		"github.com/bitnami-labs/healthcheck-tools/cmd/ssl-checker",
+		"github.com/bitnami-labs/healthcheck-tools/pkg/apache"
+	],
+	"Deps": []
+}
