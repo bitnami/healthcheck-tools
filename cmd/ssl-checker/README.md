@@ -24,12 +24,12 @@ This tool expects _Apache_ as the web server (_nginx_ will be supported in later
 The tool is executed as follows:
 
 ```
-$> ssl-checker -apacheRoot <APACHE FOLDER> -apacheConf <APACHE CONF FILE> -hostname <SERVER IP/HOSTNAME> -port <HTTPS PORT>
+$> ssl-checker -apache-root <APACHE FOLDER> -apache-conf <APACHE CONF FILE> -hostname <SERVER IP/HOSTNAME> -port <HTTPS PORT>
 ```
 
 The tool requires a set of parameters to work properly:
 
-  - *apacheRoot*: Directory where apache is installed. Default value: */opt/bitnami/apache2*.
-  - *apacheConf*: Apache configuration file. Default value: */opt/bitnami/apache/conf/httpd.conf*.
+  - *apache-root*: Directory where apache is installed. Default value: */opt/bitnami/apache2*.
+  - *apache-conf*: Apache configuration file. Default value: */opt/bitnami/apache/conf/httpd.conf*.
   - *hostname*: Hostname or IP address where the web server is running. Parameter required.
   - *port*: Port where the web server is serving HTTPS requests. Default value: 443 
