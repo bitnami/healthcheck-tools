@@ -18,4 +18,4 @@ $> make
 
 The tools are located in the *cmd* folder. Each tool has its own README.md with basic instructions.
 
-  - [SSL Checker](https://github.com/bitnami-labs/healthcheck-tools/cmd/ssl-checker)
+  - [SSL Checker](https://github.com/bitnami-labs/healthcheck-tools/tree/master/cmd/ssl-checker)
