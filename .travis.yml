@@ -7,7 +7,7 @@ os:
 - linux
 install:
 - make get-build-deps
-- make godep-save
+- make godep-restore
 script:
 - make lint
 - make build
