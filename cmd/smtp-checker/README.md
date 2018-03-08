@@ -38,3 +38,22 @@ Or:
 Optional parameters.
 
   - *mail_recipient*: Mail recipient for sending testing mails via SMTP.  Default value: *test@example.com*.
+
+## List of health checks
+The tool will perform the following health checks:
+
+  - Generic checks:
+    - Check connectivity with SMTP server(both using TLS or not).
+    - Check Time offset using a global NTP pool.
+    - Check Mail Delivery via SMTP.
+  - Specific checks:
+    - Wordpress:
+      - Obtains MySQL credentials from *wp-config.php* file.
+      - Obtains SMTP config. data from MySQL database and check there's no missing data.
+    - Redmine
+      - Check *configuration.yaml* syntax.
+      - Parse SMTP config. data from *configuration.yaml* and check there's no missing data.
+
+## Useful links
+
+  - [Troubleshoot SMTP issues (Bitnami Documentation pages)](https://docs.bitnami.com/general/how-to/troubleshoot-smtp-issues/).
