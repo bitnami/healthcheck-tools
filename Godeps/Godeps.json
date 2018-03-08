@@ -1,13 +1,73 @@
 {
 	"ImportPath": "github.com/bitnami-labs/healthcheck-tools",
 	"GoVersion": "go1.9",
-	"GodepVersion": "v79",
+	"GodepVersion": "v80",
 	"Packages": [
+		"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker",
+		"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps",
+		"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps/redmine",
+		"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps/wordpress",
 		"github.com/bitnami-labs/healthcheck-tools/cmd/ssl-checker",
-    "github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker",
-    "github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps/redmine",
 		"github.com/bitnami-labs/healthcheck-tools/pkg/apache",
-    "github.com/bitnami-labs/healthcheck-tools/pkg/mysql"
+		"github.com/bitnami-labs/healthcheck-tools/pkg/mysql"
 	],
-	"Deps": []
+	"Deps": [
+		{
+			"ImportPath": "github.com/andybalholm/crlf",
+			"Rev": "670099aa064ff74d1d109d04f02fe3a5b2e5030f"
+		},
+		{
+			"ImportPath": "github.com/beevik/ntp",
+			"Comment": "v0.2.0-1-g68f8580",
+			"Rev": "68f85807c2ee1e34097f9fcce627f020607be19d"
+		},
+		{
+			"ImportPath": "github.com/ghodss/yaml",
+			"Comment": "v1.0.0",
+			"Rev": "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.3-55-g5890359",
+			"Rev": "5890359fb7194c7b6a139fa0ea3822a07827a675"
+		},
+		{
+			"ImportPath": "github.com/juju/errors",
+			"Rev": "c7d06af17c68cd34c835053720b21f6549d9b0ee"
+		},
+		{
+			"ImportPath": "github.com/mmikulicic/multierror",
+			"Rev": "c1ad6b5ecd26cce22a8e243d1e3814afd312a15f"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/php_session_decoder/php_serialize",
+			"Rev": "c71d3c8869fef0806db6f109afff2f77ef874329"
+		},
+		{
+			"ImportPath": "golang.org/x/net/bpf",
+			"Rev": "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
+		},
+		{
+			"ImportPath": "golang.org/x/net/internal/iana",
+			"Rev": "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
+		},
+		{
+			"ImportPath": "golang.org/x/net/internal/socket",
+			"Rev": "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
+		},
+		{
+			"ImportPath": "golang.org/x/net/ipv4",
+			"Rev": "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
+		},
+		{
+			"ImportPath": "golang.org/x/text/transform",
+			"Comment": "v0.3.0-36-gb7ef84a",
+			"Rev": "b7ef84aaf62aa3e70962625c80a571ae7c17cb40"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Comment": "v2.1.1",
+			"Rev": "7f97868eec74b32b0982dd158a51a446d1da7eb5"
+		}
+	]
 }
