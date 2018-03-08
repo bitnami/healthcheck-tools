@@ -29,6 +29,9 @@ deploy:
     - cmd/ssl-checker/bin/ssl-checker-v*-linux-amd64
     - cmd/ssl-checker/bin/ssl-checker-v*-windows-amd64.exe
     - cmd/ssl-checker/bin/ssl-checker-v*-darwin-amd64
+    - cmd/smtp-checker/bin/smtp-checker-v*-linux-amd64
+    - cmd/smtp-checker/bin/smtp-checker-v*-windows-amd64.exe
+    - cmd/smtp-checker/bin/smtp-checker-v*-darwin-amd64
   on:
     repo: bitnami-labs/healthcheck-tools
     tags: true

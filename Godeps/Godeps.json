@@ -4,7 +4,10 @@
 	"GodepVersion": "v79",
 	"Packages": [
 		"github.com/bitnami-labs/healthcheck-tools/cmd/ssl-checker",
-		"github.com/bitnami-labs/healthcheck-tools/pkg/apache"
+    "github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker",
+    "github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps/redmine",
+		"github.com/bitnami-labs/healthcheck-tools/pkg/apache",
+    "github.com/bitnami-labs/healthcheck-tools/pkg/mysql"
 	],
 	"Deps": []
 }
