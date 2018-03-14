@@ -32,6 +32,9 @@ deploy:
     - cmd/smtp-checker/bin/smtp-checker-v*-linux-amd64
     - cmd/smtp-checker/bin/smtp-checker-v*-windows-amd64.exe
     - cmd/smtp-checker/bin/smtp-checker-v*-darwin-amd64
+    - cmd/smtp-checker/bin/permissions-checker-v*-linux-amd64
+    - cmd/smtp-checker/bin/permissions-checker-v*-windows-amd64.exe
+    - cmd/smtp-checker/bin/permissions-checker-v*-darwin-amd64
   on:
     repo: bitnami-labs/healthcheck-tools
     tags: true
