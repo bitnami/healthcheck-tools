@@ -50,13 +50,13 @@ Starting checks with these parameters:
 		switch mode := f.Mode(); {
 		case mode.IsRegular():
 			fileName := f.Name()
-			filePerm := mode.Perm()
+			filePerm := mode.Perm().String()
 			if f.Name()[0:1] != "." || ShowHidden {
 				PrintPermissions("", "f", fileName, filePerm)
 			}
 		case mode.IsDir():
 			dirName := f.Name()
-			dirPerm := mode.Perm()
+			dirPerm := mode.Perm().String()
 			if f.Name()[0:1] != "." || ShowHidden {
 				PrintPermissions("", "d", dirName, dirPerm)
 				FindRecursive(strings.Join([]string{installDir, dirName}, "/"), "")
