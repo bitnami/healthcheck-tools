@@ -3,24 +3,27 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
-	"os/exec"
+	"strings"
 )
 
 var (
 	// VERSION will be overwritten automatically by the build system
 	VERSION = "devel"
+	// ShowHidden include hidden files or directories in the loops
+	ShowHidden bool
 )
 
 func main() {
 	var (
 		installDir string
-		app        string
 		getVersion bool
 	)
 	flag.StringVar(&installDir, "install_dir", "/opt/bitnami", "Installation Directory")
-	flag.StringVar(&app, "application", "", "Application")
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
+	flag.BoolVar(&ShowHidden, "show_hidden", false, "Show hidden files and directories")
 	flag.Parse()
 
 	if getVersion {
@@ -32,17 +35,32 @@ func main() {
 	PERMISSIONS CHECKS
 ==================================================
 Starting checks with these parameters:
-	- Application: %s
 	- Installation directory: %s
+	- Show hidden: %t
 ==================================================
 
-`, app, installDir)
+`, installDir, ShowHidden)
 
-	c1 := exec.Command("ls", "-lR", installDir)
-	c2 := exec.Command("awk", "FNR > 1 {k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\"%0o \",k);print $1\" \"$3\" \"$4\" \"$9}")
-	c2.Stdin, _ = c1.StdoutPipe()
-	c2.Stdout = os.Stdout
-	_ = c2.Start()
-	_ = c1.Run()
-	_ = c2.Wait()
+	files, err := ioutil.ReadDir(installDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range files {
+		switch mode := f.Mode(); {
+		case mode.IsRegular():
+			fileName := f.Name()
+			filePerm := mode.Perm()
+			if f.Name()[0:1] != "." || ShowHidden {
+				PrintPermissions("", "f", fileName, filePerm)
+			}
+		case mode.IsDir():
+			dirName := f.Name()
+			dirPerm := mode.Perm()
+			if f.Name()[0:1] != "." || ShowHidden {
+				PrintPermissions("", "d", dirName, dirPerm)
+				FindRecursive(strings.Join([]string{installDir, dirName}, "/"), "")
+			}
+		}
+	}
 }
