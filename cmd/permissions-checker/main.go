@@ -10,36 +10,42 @@ import (
 var (
 	// VERSION will be overwritten automatically by the build system
 	VERSION = "devel"
-	// ShowHidden include hidden files or directories in the loops
+	// ShowHidden include hidden files or directories in the search
 	ShowHidden bool
 	// Verbose print everything
 	Verbose bool
-	// Ignore Files and/or directories to be ignored
-	Ignore string
+	// Exclude some files and/or directories (RegExp)
+	Exclude string
+	// DefaultFilePerm are the default default file permissions
+	DefaultFilePerm string
+	// DefaultDirPerm are the default directory permissions
+	DefaultDirPerm string
+	// DefaultOwner is the default owner
+	DefaultOwner string
+	// DefaultGroup is the default group
+	DefaultGroup string
+	// Directory to check
+	Directory string
 )
 
 func main() {
 	var (
-		directory   string
-		fileDefault string
-		dirDefault  string
-		owner       string
-		group       string
-		getVersion  bool
+		getVersion bool
 	)
-	flag.StringVar(&directory, "dir", "/opt/bitnami", "Directory to check")
-	flag.StringVar(&fileDefault, "file_default", "rw-rw-r--", "Default file permissions")
-	flag.StringVar(&dirDefault, "dir_default", "rwxrwxr-x", "Default directory permissions")
-	flag.StringVar(&owner, "owner", "bitnami", "Default owner")
-	flag.StringVar(&group, "group", "daemon", "Default group")
-	flag.StringVar(&Ignore, "ignore", "", "Files and/or directories to be ignored")
+	flag.StringVar(&Directory, "dir", "/opt/bitnami", "Directory to check")
+	flag.StringVar(&DefaultFilePerm, "file_default", "rw-rw-r--", "Default file permissions")
+	flag.StringVar(&DefaultDirPerm, "dir_default", "rwxrwxr-x", "Default directory permissions")
+	flag.StringVar(&DefaultOwner, "owner", "bitnami", "Default owner")
+	flag.StringVar(&DefaultGroup, "group", "daemon", "Default group")
+	flag.StringVar(&Exclude, "exclude", "(?!.*)", "Files and/or directories to be excluded")
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
 	flag.BoolVar(&ShowHidden, "show_hidden", false, "Show hidden files and directories")
 	flag.BoolVar(&Verbose, "verbose", false, "Print every file and directory")
 	flag.Parse()
 
-	directory = strings.TrimSuffix(directory, "/")
-	Ignore = strings.TrimSuffix(Ignore, "/")
+	// Unify the format eliminating the last / if exists
+	Directory = strings.TrimSuffix(Directory, "/")
+	Exclude = strings.TrimSuffix(Exclude, "/")
 
 	if getVersion {
 		fmt.Println(VERSION)
@@ -55,12 +61,12 @@ Starting checks with these parameters:
 	- Default dir permissions: %s
 	- Owner: %s
 	- Group: %s
-	- Ignore: %s
+	- Exclude: %s
 	- Show hidden: %t
 	- Verbose: %t
 ==================================================
-`, directory, fileDefault, dirDefault, owner, group, Ignore, ShowHidden, Verbose)
+`, Directory, DefaultFilePerm, DefaultDirPerm, DefaultOwner, DefaultGroup, Exclude, ShowHidden, Verbose)
 
 	fmt.Printf("\x1b[34;1m\n-- Checking permissions --\n\x1b[0m")
-	FindRecursive(directory, "", fileDefault, dirDefault, owner, group)
+	FindRecursive(Directory, "")
 }
