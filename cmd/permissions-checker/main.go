@@ -14,24 +14,32 @@ var (
 	ShowHidden bool
 	// Verbose print everything
 	Verbose bool
+	// Ignore Files and/or directories to be ignored
+	Ignore string
 )
 
 func main() {
 	var (
 		directory   string
-		application string
 		fileDefault string
 		dirDefault  string
+		owner       string
+		group       string
 		getVersion  bool
 	)
-	flag.StringVar(&directory, "dir", "/opt/bitnami", "Starting directory")
-	flag.StringVar(&application, "application", "", "Application")
-	flag.StringVar(&fileDefault, "file_default", "rw-rw-r--", "File default permissions")
-	flag.StringVar(&dirDefault, "dir_default", "rwxrwxr-x", "Directory default permissions")
+	flag.StringVar(&directory, "dir", "/opt/bitnami", "Directory to check")
+	flag.StringVar(&fileDefault, "file_default", "rw-rw-r--", "Default file permissions")
+	flag.StringVar(&dirDefault, "dir_default", "rwxrwxr-x", "Default directory permissions")
+	flag.StringVar(&owner, "owner", "bitnami", "Default owner")
+	flag.StringVar(&group, "group", "daemon", "Default group")
+	flag.StringVar(&Ignore, "ignore", "", "Files and/or directories to be ignored")
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
 	flag.BoolVar(&ShowHidden, "show_hidden", false, "Show hidden files and directories")
 	flag.BoolVar(&Verbose, "verbose", false, "Print every file and directory")
 	flag.Parse()
+
+	directory = strings.TrimSuffix(directory, "/")
+	Ignore = strings.TrimSuffix(Ignore, "/")
 
 	if getVersion {
 		fmt.Println(VERSION)
@@ -43,14 +51,16 @@ func main() {
 ==================================================
 Starting checks with these parameters:
 	- Directory to check: %s
-	- Application: %s
 	- Default file permissions: %s
 	- Default dir permissions: %s
+	- Owner: %s
+	- Group: %s
+	- Ignore: %s
 	- Show hidden: %t
 	- Verbose: %t
 ==================================================
-`, directory, application, fileDefault, dirDefault, ShowHidden, Verbose)
+`, directory, fileDefault, dirDefault, owner, group, Ignore, ShowHidden, Verbose)
 
-	fmt.Printf("\x1b[34;1m\n-- Checking %s permissions --\n\x1b[0m", strings.Title(application))
-	FindRecursive(directory, "", fileDefault, dirDefault)
+	fmt.Printf("\x1b[34;1m\n-- Checking permissions --\n\x1b[0m")
+	FindRecursive(directory, "", fileDefault, dirDefault, owner, group)
 }
