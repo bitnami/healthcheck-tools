@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 )
 
 var (
@@ -43,9 +42,7 @@ func main() {
 	flag.BoolVar(&Verbose, "verbose", false, "Print every file and directory")
 	flag.Parse()
 
-	// Unify the format eliminating the last / if exists
-	Directory = strings.TrimSuffix(Directory, "/")
-	Exclude = strings.TrimSuffix(Exclude, "/")
+	ManageInputs()
 
 	if getVersion {
 		fmt.Println(VERSION)
@@ -68,5 +65,5 @@ Starting checks with these parameters:
 `, Directory, DefaultFilePerm, DefaultDirPerm, DefaultOwner, DefaultGroup, Exclude, ShowHidden, Verbose)
 
 	fmt.Printf("\x1b[34;1m\n-- Checking permissions --\n\x1b[0m")
-	FindRecursive(Directory, "")
+	FindRecursive(Directory, 0)
 }

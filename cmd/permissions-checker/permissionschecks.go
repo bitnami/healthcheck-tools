@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/user"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
@@ -14,7 +16,7 @@ import (
 /* path  - where to look for files and directories
  * level - used to print the output in a hierarchical way
  */
-func FindRecursive(path, level string) {
+func FindRecursive(path string, level int) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
@@ -22,74 +24,53 @@ func FindRecursive(path, level string) {
 
 	// In verbose mode we are printing the output in a hierarchical way
 	if Verbose {
-		level = level + "  "
+		level++
 	}
 
 	for _, f := range files {
 		name := f.Name()
+
 		relativePath := strings.TrimPrefix(strings.Join([]string{path, name}, "/"), Directory)
 		fullPath := strings.Join([]string{path, name}, "/")
 
-		match, _ := regexp.MatchString(Exclude, relativePath)
-		if match {
+		if m, _ := regexp.MatchString(Exclude, relativePath); m {
 			if Verbose {
-				fmt.Printf("\x1b[33m%sExcluding %s\n\x1b[0m", level, name)
+				fmt.Printf("\x1b[33m%sExcluding %s\n\x1b[0m", strings.Repeat(" ", level), name)
 			}
 		} else {
-			mode := f.Mode()
-			currentOwner, _ := user.LookupId(fmt.Sprint(f.Sys().(*syscall.Stat_t).Uid))
-			currentGroup, _ := user.LookupGroupId(fmt.Sprint(f.Sys().(*syscall.Stat_t).Gid))
-			currentPerm := mode.Perm().String()
-			hasCorrectOwner := checkOwner(currentOwner.Username, DefaultOwner)
-			hasCorrectGroup := checkOwner(currentGroup.Name, DefaultGroup)
+			if ShowHidden || !strings.HasPrefix(name, ".") {
+				mode := f.Mode()
+				currentOwner, _ := user.LookupId(fmt.Sprint(f.Sys().(*syscall.Stat_t).Uid))
+				currentGroup, _ := user.LookupGroupId(fmt.Sprint(f.Sys().(*syscall.Stat_t).Gid))
+				currentPerm := mode.Perm().String()
+				hasCorrectOwner := currentOwner.Username == DefaultOwner
+				hasCorrectGroup := currentGroup.Name == DefaultGroup
 
-			if mode.IsRegular() && (f.Name()[0:1] != "." || ShowHidden) {
-				hasCorrectPermissions := checkPermissions(currentPerm, DefaultFilePerm)
-				printOutput(level, "f", name, fullPath, currentPerm, DefaultFilePerm, currentOwner.Username, currentGroup.Name, hasCorrectPermissions, hasCorrectOwner, hasCorrectGroup)
-			} else if mode.IsDir() && (f.Name()[0:1] != "." || ShowHidden) {
-				hasCorrectPermissions := checkPermissions(currentPerm, DefaultDirPerm)
-				printOutput(level, "d", name, fullPath, currentPerm, DefaultDirPerm, currentOwner.Username, currentGroup.Name, hasCorrectPermissions, hasCorrectOwner, hasCorrectGroup)
-				FindRecursive(fullPath, level)
+				if mode.IsRegular() {
+					hasCorrectPermissions := checkPermissions(currentPerm, DefaultFilePerm)
+					printOutput(level, "f", fullPath, currentPerm, DefaultFilePerm, currentOwner.Username, currentGroup.Name, hasCorrectPermissions, hasCorrectOwner, hasCorrectGroup)
+				} else if mode.IsDir() {
+					hasCorrectPermissions := checkPermissions(currentPerm, DefaultDirPerm)
+					printOutput(level, "d", fullPath, currentPerm, DefaultDirPerm, currentOwner.Username, currentGroup.Name, hasCorrectPermissions, hasCorrectOwner, hasCorrectGroup)
+					FindRecursive(fullPath, level)
+				}
 			}
 		}
 	}
 }
 
 // checkPermissions return true if the permissions are correct (false in other case)
-/* currentPermissions [string] - permissions that the file or directory has
- * defaultPermissions [string] - permissions that should have
+/* currentPermissions [string] - permissions that the file or directory has (i.e. -rwxrwxr-x)
+ * defaultPermissions [string] - permissions that should have (i.e. rwxrwxr-x)
  */
 func checkPermissions(currentPermissions, defaultPermissions string) bool {
 	return strings.Contains(currentPermissions, defaultPermissions)
 }
 
-// checkOwner return true if the owner is correct (false in other case)
-/* currentOwner [string] - owner of the file or directory
- * defaultOwner [string] - owner that should have the file or directory
- */
-func checkOwner(currentOwner, defaultOwner string) bool {
-	if currentOwner == defaultOwner {
-		return true
-	}
-	return false
-}
-
-// checkGroup return true if the group is correct (false in other case)
-/* currentGroup [string] - group of the file or directory
- * defaultGroup [string] - group that should have the file or directory
- */
-func checkGroup(currentGroup, defaultGroup string) bool {
-	if currentGroup == defaultGroup {
-		return true
-	}
-	return false
-}
-
 // printOutput Print the data in different formats according to the situation
 /* level [string] 							- used to print the output in a hierarchical way
  * kind [string] 								- "f" if it is file or "d" in case of a directory
- * name [string] 								- file/directory name
- * fullPath [string] 						- full path of the file/directory
+ * name [string] 				  			- receive the full path of the file/directory (if verbose only use the name)
  * currentPermissions [string] 	- file/directory current permissions
  * defaultPermissions [string] 	- file/directory default permissions
  * currentOwner [string] 				- file/directory current owner
@@ -98,20 +79,36 @@ func checkGroup(currentGroup, defaultGroup string) bool {
  * hasCorrectOwner [bool] 			- true if the owner is correct
  * hasCorrectGroup [bool] 			- true if the group is correct
  */
-func printOutput(level, kind, name, fullPath, currentPermissions, defaultPermissions, currentOwner, currentGroup string, hasCorrectPermissions, hasCorrectOwner, hasCorrectGroup bool) {
-	if !Verbose {
-		name = fullPath
+func printOutput(level int, kind, name, currentPermissions, defaultPermissions, currentOwner, currentGroup string, hasCorrectPermissions, hasCorrectOwner, hasCorrectGroup bool) {
+	if Verbose {
+		name = filepath.Base(name)
 	}
 
 	if hasCorrectPermissions && hasCorrectOwner && hasCorrectGroup { // Everything correct
 		if Verbose {
-			fmt.Printf("%s(%s) %s %s %s %s\n", level, kind, name, currentPermissions, currentOwner, currentGroup)
+			fmt.Printf("%s(%s) %s %s %s %s\n", strings.Repeat(" ", level), kind, name, currentPermissions, currentOwner, currentGroup)
 		}
 	} else if hasCorrectPermissions && (!hasCorrectOwner || !hasCorrectGroup) { // Permissions correct, fails owner or group
-		fmt.Printf("\x1b[31;1m%s(%s) %s %s %s %s (expected %s %s)\n\x1b[0m", level, kind, name, currentPermissions, currentOwner, currentGroup, DefaultOwner, DefaultGroup)
+		fmt.Printf("\x1b[31;1m%s(%s) %s %s %s %s (expected %s %s)\n\x1b[0m", strings.Repeat(" ", level), kind, name, currentPermissions, currentOwner, currentGroup, DefaultOwner, DefaultGroup)
 	} else if !hasCorrectPermissions && (hasCorrectOwner && hasCorrectGroup) { // Permissions wrong, owner and group correct
-		fmt.Printf("\x1b[31;1m%s(%s) %s %s (expected %s) %s %s\n\x1b[0m", level, kind, name, currentPermissions, defaultPermissions, currentOwner, currentGroup)
+		fmt.Printf("\x1b[31;1m%s(%s) %s %s (expected %s) %s %s\n\x1b[0m", strings.Repeat(" ", level), kind, name, currentPermissions, defaultPermissions, currentOwner, currentGroup)
 	} else if !hasCorrectPermissions && (!hasCorrectOwner || !hasCorrectGroup) { // Nothing correct
-		fmt.Printf("\x1b[31;1m%s(%s) %s %s (expected %s) %s %s (expected %s %s)\n\x1b[0m", level, kind, name, currentPermissions, defaultPermissions, currentOwner, currentGroup, DefaultOwner, DefaultGroup)
+		fmt.Printf("\x1b[31;1m%s(%s) %s %s (expected %s) %s %s (expected %s %s)\n\x1b[0m", strings.Repeat(" ", level), kind, name, currentPermissions, defaultPermissions, currentOwner, currentGroup, DefaultOwner, DefaultGroup)
+	}
+}
+
+// ManageInputs Validate and/or format the parameters entered by the user
+func ManageInputs() {
+	// Unify the format eliminating the last / if exists
+	Directory = strings.TrimSuffix(Directory, "/")
+	Exclude = strings.TrimSuffix(Exclude, "/")
+
+	// Check if the default permissions introduced by the user are in the Linux format
+	if m, _ := regexp.MatchString("^[-rwx]{9,10}$", DefaultFilePerm); !m {
+		log.Fatalf("file_default should be in the Linux format (i.e. \"rw-rw-r--\")\n")
+		os.Exit(2)
+	} else if m, _ := regexp.MatchString("^[-rwx]{9,10}$", DefaultDirPerm); !m {
+		log.Fatalf("dir_default should be in the Linux format (i.e. \"rw-rw-r--\")\n")
+		os.Exit(2)
 	}
 }
