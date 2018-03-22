@@ -21,7 +21,7 @@ $> make
 The tool is executed as follows:
 
 ```
-$> permissions-checker -dir <DIRECTORY> -dir_default <DIR DEFAULT PERM> -file_default <FILE DEFAULT PERM> -owner <DEFAULT OWNER> -group <DEFAULT GROUP> -exclude <REGEXP> -show_hidden -verbose
+$> permissions-checker -dir <DIRECTORY> -dir_default <DIR DEFAULT PERM> -file_default <FILE DEFAULT PERM> -owner <DEFAULT OWNER> -group <DEFAULT GROUP> -exclude <REGEXP> -hidden -verbose
 ```
 
 The tool requires a set of parameters to work properly:
@@ -31,10 +31,10 @@ The tool requires a set of parameters to work properly:
 - *file_default*: Default file permissions. Default vale: *rwrw-r--*
 - *owner*: Default owner. Default vale: *bitnami*
 - *group*: Default group. Default vale: *daemon*
-- *exclude*: File or directory to be excluded (you can use RegExp).
-- *show_hidden*: Include hidden files and directories in the check.
-- *verbose*: Print every file and directory in a hierarchical way.
-- *version*: Show current version.
+- *exclude*: Files and/or directories to be excluded (you can use RegExp).
+- *hidden*: Includes hidden files and directories in the check.
+- *verbose*: Prints every file and directory in a hierarchical way.
+- *version*: Shows current version.
 
 ## List of health checks
 
@@ -46,7 +46,7 @@ The tool will perform the following health checks:
 
 ## Examples
 
-#### Verbose
+### Verbose
 
 ```
 ==================================================
@@ -59,7 +59,7 @@ Starting checks with these parameters:
 	- Owner: crhernandez
 	- Group: admin
 	- Exclude: (?!.*)
-	- Show hidden: false
+	- Include hidden: false
 	- Verbose: true
 ==================================================
 
@@ -80,7 +80,7 @@ Starting checks with these parameters:
       (f) plain-background.png -rw-r--r-- crhernandez admin
 ```
 
-#### No verbose
+### No verbose
 
 ```
 ==================================================
@@ -93,7 +93,7 @@ Starting checks with these parameters:
 	- Owner: crhernandez
 	- Group: admin
 	- Exclude: (?!.*)
-	- Show hidden: false
+	- Include hidden: false
 	- Verbose: false
 ==================================================
 
