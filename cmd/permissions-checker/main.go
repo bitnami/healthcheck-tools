@@ -66,10 +66,18 @@ func main() {
 	search.exclude = regexp.MustCompile(excludeStr)
 
 	// Checks if the default permissions introduced by the user are in the Linux format
-	defLinuxFormat := regexp.MustCompile("^[-rwx]{9,10}$")
-	if !defLinuxFormat.MatchString(defaultPerm.file) || !defLinuxFormat.MatchString(defaultPerm.dir) {
-		log.Fatalf(`file_default and dir_defaultshould be in the Linux format (i.e. "rw-rw-r--")`)
-		os.Exit(2)
+	unixPermRegexp := regexp.MustCompile("^[-rwx]{9}$")
+	checks := []struct {
+		flag  string
+		value string
+	}{
+		{"file_default", defaultPerm.file},
+		{"dir_default", defaultPerm.dir},
+	}
+	for _, c := range checks {
+		if !unixPermRegexp.MatchString(c.value) {
+			log.Fatalf(`%s should be in the Unix format (i.e. "rw-rw-r--")`, c.flag)
+		}
 	}
 
 	if getVersion {
