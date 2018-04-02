@@ -23,7 +23,7 @@ The tool can receive a series of parameters, some of the most used are:
 - *file_default*: Default file permissions. Default vale: *rwrw-r--*
 - *owner*: Default owner. Default value: *bitnami*
 - *group*: Default group. Default value: *daemon*
-- *exclude*: Files and/or directories to be excluded (you can use RegExp). Default value: *(?!.\*)*
+- *exclude*: Files and/or directories to be excluded (you can use RegExp). Default value: *(.?!.\*)*
 - *hidden*: Includes hidden files and directories in the check. Default value: *false*
 
 ## List of health checks

@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+var (
+	// VERSION will be overwritten automatically by the build system
+	VERSION    = "devel"
+	excludeStr string
+)
+
+/* Data regarding default permissions
+ * 	defaultPerm.file [string]					- default permissions for files
+ * 	defaultPerm.dir [string] 					- default permissions for directories
+ * 	defaultPerm.owner [string] 				- default owner
+ * 	defaultPerm.group [string] 				- default group
+ */
 type defaultPermissions struct {
 	file  string
 	dir   string
@@ -16,16 +28,16 @@ type defaultPermissions struct {
 	group string
 }
 
+/* Data regarding search options
+ * 	search.hidden [bool] 							- includes hidden files and directories in the search
+ * 	search.exclude [*regexp.Regexp] 	- files and/or directories to be excluded
+ * 	search.baseDirectory [string]			- base directory
+ */
 type searchSettings struct {
 	hidden        bool
-	exclude       string
+	exclude       *regexp.Regexp
 	baseDirectory string
 }
-
-var (
-	// VERSION will be overwritten automatically by the build system
-	VERSION = "devel"
-)
 
 func main() {
 	var (
@@ -40,7 +52,7 @@ func main() {
 	flag.StringVar(&defaultPerm.owner, "owner", "bitnami", "Default owner")
 	flag.StringVar(&defaultPerm.group, "group", "daemon", "Default group")
 	flag.StringVar(&search.baseDirectory, "dir", "/opt/bitnami", "Directory to check")
-	flag.StringVar(&search.exclude, "exclude", "(?!.*)", "Files and/or directories to be excluded")
+	flag.StringVar(&excludeStr, "exclude", "(.?!.*)", "Files and/or directories to be excluded")
 	flag.BoolVar(&search.hidden, "hidden", false, "Includes hidden files and directories")
 	flag.BoolVar(&verbose, "verbose", false, "Print every file and directory")
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
@@ -48,14 +60,14 @@ func main() {
 
 	// Unifies the format eliminating the last "/" if exists
 	search.baseDirectory = strings.TrimSuffix(search.baseDirectory, "/")
-	search.exclude = strings.TrimSuffix(search.exclude, "/")
+	excludeStr = strings.TrimSuffix(excludeStr, "/")
+
+	search.exclude = regexp.MustCompile(excludeStr)
 
 	// Checks if the default permissions introduced by the user are in the Linux format
-	if m, _ := regexp.MatchString("^[-rwx]{9,10}$", defaultPerm.file); !m {
-		log.Fatalf("file_default should be in the Linux format (i.e. \"rw-rw-r--\")\n")
-		os.Exit(2)
-	} else if m, _ := regexp.MatchString("^[-rwx]{9,10}$", defaultPerm.dir); !m {
-		log.Fatalf("dir_default should be in the Linux format (i.e. \"rw-rw-r--\")\n")
+	defLinuxFormat := regexp.MustCompile("^[-rwx]{9,10}$")
+	if !defLinuxFormat.MatchString(defaultPerm.file) || !defLinuxFormat.MatchString(defaultPerm.dir) {
+		log.Fatalf("file_default and dir_default should be in the Linux format (i.e. \"rw-rw-r--\")\n")
 		os.Exit(2)
 	}
 

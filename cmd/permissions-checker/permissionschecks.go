@@ -6,7 +6,6 @@ import (
 	"log"
 	"os/user"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"syscall"
 )
@@ -30,7 +29,7 @@ type currentPermissions struct {
  * 	defaultPerm.group [string] 				- default group
  * search [searchSettings] 						- data regarding search options
  * 	search.hidden [bool] 							- includes hidden files and directories in the search
- * 	search.exclude [string] 					- files and/or directories to be excluded (regexp)
+ * 	search.exclude [*regexp.Regexp] 	- files and/or directories to be excluded
  * 	search.baseDirectory [string]			- base directory
  * level [int]                        - used to print the output in a hierarchical way
  */
@@ -51,7 +50,7 @@ func FindRecursive(path string, defaultPerm defaultPermissions, search searchSet
 		relativePath := strings.TrimPrefix(strings.Join([]string{path, name}, "/"), search.baseDirectory)
 		fullPath := strings.Join([]string{path, name}, "/")
 
-		if m, _ := regexp.MatchString(search.exclude, relativePath); m {
+		if search.exclude.MatchString(relativePath) {
 			if verbose {
 				fmt.Printf("\x1b[33m%sExcluding %s\n\x1b[0m", strings.Repeat(" ", level), name)
 			}
