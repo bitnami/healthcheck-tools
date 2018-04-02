@@ -52,7 +52,7 @@ func FindRecursive(path string, defaultPerm defaultPermissions, search searchSet
 
 		if search.exclude.MatchString(relativePath) {
 			if verbose {
-				fmt.Printf("\x1b[33m%sExcluding %s\n\x1b[0m", strings.Repeat(" ", level), name)
+				fmt.Printf(Colorize("yellow", fmt.Sprintf("%sExcluding %s\n", strings.Repeat(" ", level), name)))
 			}
 		} else {
 			if search.hidden || !strings.HasPrefix(name, ".") {
@@ -120,10 +120,31 @@ func printOutput(level int, kind, fullPath string, currentPerm currentPermission
 			fmt.Printf("%s(%s) %s %s %s %s\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group)
 		}
 	} else if currentPerm.hasCorrectPermissions && (!currentPerm.hasCorrectOwner || !currentPerm.hasCorrectGroup) { // Permissions correct, fails owner or group
-		fmt.Printf("\x1b[31;1m%s(%s) %s %s %s %s (expected %s %s)\n\x1b[0m", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)
+		fmt.Printf(Colorize("red", fmt.Sprintf("%s(%s) %s %s %s %s (expected %s %s)\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)))
 	} else if !currentPerm.hasCorrectPermissions && (currentPerm.hasCorrectOwner && currentPerm.hasCorrectGroup) { // Permissions wrong, owner and group correct
-		fmt.Printf("\x1b[31;1m%s(%s) %s %s (expected %s) %s %s\n\x1b[0m", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group)
+		fmt.Printf(Colorize("red", fmt.Sprintf("%s(%s) %s %s (expected %s) %s %s\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group)))
 	} else if !currentPerm.hasCorrectPermissions && (!currentPerm.hasCorrectOwner || !currentPerm.hasCorrectGroup) { // Nothing correct
-		fmt.Printf("\x1b[31;1m%s(%s) %s %s (expected %s) %s %s (expected %s %s)\n\x1b[0m", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)
+		fmt.Printf(Colorize("red", fmt.Sprintf("%s(%s) %s %s (expected %s) %s %s (expected %s %s)\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)))
 	}
+}
+
+// Colorize Returns a string using ansi colors
+func Colorize(color, s string) string {
+	const (
+		esc        = "\x1b"
+		ansiBlue   = esc + "[34;1m"
+		ansiRed    = esc + "[31;1m"
+		ansiYellow = esc + "[33m"
+		ansiReset  = esc + "[0m"
+	)
+	result := s
+
+	if strings.Compare(color, "blue") == 0 {
+		result = fmt.Sprintf("%s%s%s", ansiBlue, string(s), ansiReset)
+	} else if strings.Compare(color, "red") == 0 {
+		result = fmt.Sprintf("%s%s%s", ansiRed, string(s), ansiReset)
+	} else if strings.Compare(color, "yellow") == 0 {
+		result = fmt.Sprintf("%s%s%s", ansiYellow, string(s), ansiReset)
+	}
+	return result
 }

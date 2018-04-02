@@ -65,7 +65,7 @@ func main() {
 
 	search.exclude = regexp.MustCompile(excludeStr)
 
-	// Checks if the default permissions introduced by the user are in the Linux format
+	// Checks if the default permissions introduced by the user are in the Unix format
 	unixPermRegexp := regexp.MustCompile("^[-rwx]{9}$")
 	checks := []struct {
 		flag  string
@@ -100,6 +100,6 @@ Starting checks with these parameters:
 ==================================================
 `, search.baseDirectory, defaultPerm.file, defaultPerm.dir, defaultPerm.owner, defaultPerm.group, search.exclude, search.hidden, verbose)
 
-	fmt.Printf("\x1b[34;1m\n-- Checking permissions --\n\x1b[0m")
+	fmt.Printf(Colorize("blue", "\n-- Checking permissions --\n"))
 	FindRecursive(search.baseDirectory, defaultPerm, search, verbose, 0)
 }
