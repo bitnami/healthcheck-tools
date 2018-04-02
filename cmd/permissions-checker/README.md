@@ -8,33 +8,23 @@ _permissions-checker_ performs a set of health checks in your server or local ma
 $> go get github.com/bitnami-labs/healthcheck-tools/cmd/permissions-checker/...
 ```
 
-## Building from source
-
-```
-$> git clone https://github.com/bitnami-labs/healthcheck-tools.git
-$> cd cmd/permissions-checker
-$> make
-```
-
 ## Basic usage
 
 The tool is executed as follows:
 
 ```
-$> permissions-checker -dir <DIRECTORY> -dir_default <DIR DEFAULT PERM> -file_default <FILE DEFAULT PERM> -owner <DEFAULT OWNER> -group <DEFAULT GROUP> -exclude <REGEXP> -hidden -verbose
+$> permissions-checker --dir <DIRECTORY> --dir_default <DIR DEFAULT PERM> --file_default <FILE DEFAULT PERM> --owner <DEFAULT OWNER> --group <DEFAULT GROUP> --exclude <REGEXP> --hidden --verbose
 ```
 
-The tool requires a set of parameters to work properly:
+The tool can receive a series of parameters, some of the most used are:
 
 - *dir*: Directory to check. Default vale: */opt/bitnami*
 - *dir_default*: Default directory permissions. Default vale: *rwxrwxr-x*
 - *file_default*: Default file permissions. Default vale: *rwrw-r--*
-- *owner*: Default owner. Default vale: *bitnami*
-- *group*: Default group. Default vale: *daemon*
-- *exclude*: Files and/or directories to be excluded (you can use RegExp).
-- *hidden*: Includes hidden files and directories in the check.
-- *verbose*: Prints every file and directory in a hierarchical way.
-- *version*: Shows current version.
+- *owner*: Default owner. Default value: *bitnami*
+- *group*: Default group. Default value: *daemon*
+- *exclude*: Files and/or directories to be excluded (you can use RegExp). Default value: *(?!.\*)*
+- *hidden*: Includes hidden files and directories in the check. Default value: *false*
 
 ## List of health checks
 
