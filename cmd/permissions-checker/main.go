@@ -1,4 +1,8 @@
-package main
+// Package permissionschecks performs a set of health checks in your
+// server or local machine to detect any possible issues with the
+// permissions configuration comparing the current permissions,
+// owner and groups with those that should have.
+package permissionschecks
 
 import (
 	"flag"
@@ -16,28 +20,19 @@ var (
 	excludeStr string
 )
 
-/* Data regarding default permissions
- * 	defaultPerm.file [string]					- default permissions for files
- * 	defaultPerm.dir [string] 					- default permissions for directories
- * 	defaultPerm.owner [string] 				- default owner
- * 	defaultPerm.group [string] 				- default group
- */
+// Data regarding default permissions
 type defaultPermissions struct {
-	file  string
-	dir   string
-	owner string
-	group string
+	file  string // default permissions for files
+	dir   string // default permissions for directories
+	owner string // default owner
+	group string // default group
 }
 
-/* Data regarding search options
- * 	search.hidden [bool] 							- includes hidden files and directories in the search
- * 	search.exclude [*regexp.Regexp] 	- files and/or directories to be excluded
- * 	search.baseDirectory [string]			- base directory
- */
+// Data regarding search options
 type searchSettings struct {
-	hidden        bool
-	exclude       *regexp.Regexp
-	baseDirectory string
+	hidden        bool           // includes hidden files and directories in the search
+	exclude       *regexp.Regexp // files and/or directories to be excluded
+	baseDirectory string         // base directory
 }
 
 func main() {

@@ -1,4 +1,4 @@
-package main
+package permissionschecks
 
 import (
 	"fmt"
@@ -10,29 +10,18 @@ import (
 	"syscall"
 )
 
+// Data regarding current permissions of the item (file or directory)
 type currentPermissions struct {
-	permissions           string
-	defaultPermissions    string
-	owner                 string
-	group                 string
-	hasCorrectPermissions bool
-	hasCorrectOwner       bool
-	hasCorrectGroup       bool
+	permissions           string // item permissions
+	defaultPermissions    string // default permissions according to item type
+	owner                 string // item owner
+	group                 string // item group
+	hasCorrectPermissions bool   // true if item permissions = default permissions
+	hasCorrectOwner       bool   // true if item owner = default owner
+	hasCorrectGroup       bool   // true if item group = default group
 }
 
 // FindRecursive iterates in a directory showing permissions in a recursive way
-/* path [string] 											- where to look for files and directories
- * defaultPerm [defaultPermissions] 	- data regarding default permissions
- * 	defaultPerm.file [string]					- default permissions for files
- * 	defaultPerm.dir [string] 					- default permissions for directories
- * 	defaultPerm.owner [string] 				- default owner
- * 	defaultPerm.group [string] 				- default group
- * search [searchSettings] 						- data regarding search options
- * 	search.hidden [bool] 							- includes hidden files and directories in the search
- * 	search.exclude [*regexp.Regexp] 	- files and/or directories to be excluded
- * 	search.baseDirectory [string]			- base directory
- * level [int]                        - used to print the output in a hierarchical way
- */
 func FindRecursive(path string, defaultPerm defaultPermissions, search searchSettings, verbose bool, level int) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -84,31 +73,11 @@ func FindRecursive(path string, defaultPerm defaultPermissions, search searchSet
 }
 
 // checkPermissions returns true if the permissions are correct (false in another case)
-/* currentPermissions [string] - permissions that the file or directory has (i.e. -rwxrwxr-x)
- * defaultPermissions [string] - permissions that should have (i.e. rwxrwxr-x)
- */
 func checkPermissions(currentPermissions, defaultPermissions string) bool {
 	return strings.Contains(currentPermissions, defaultPermissions)
 }
 
-// printOutput Prints the data in different formats according to the situation
-/* level [string] 														- used to print the output in a hierarchical way
- * kind [string] 															- "f" if it is file or "d" in case of a directory
- * fullPath [string] 				  								- file/directory full path (if verbose only use the name)
- * currentPerm [currentPermissions]						- data to print relate
- * 	currentPerm.permissions [string] 					- file/directory current permissions
- * 	currentPerm.defaultPermissions [string] 	- file/directory default permissions
- * 	currentPerm.owner [string] 								- file/directory current owner
- * 	currentPerm.group [string] 								- file/directory current group
- * 	currentPerm.hasCorrectPermissions [bool] 	- true if the permissions are correct
- * 	currentPerm.hasCorrectOwner [bool] 				- true if the owner is correct
- * 	currentPerm.hasCorrectGroup [bool] 				- true if the group is correct
- * defaultPerm [defaultPermissions] 					- data regarding default permissions
- * 	defaultPerm.file [string]									- default permissions for files
- * 	defaultPerm.dir [string] 									- default permissions for directories
- * 	defaultPerm.owner [string] 								- default owner
- * 	defaultPerm.group [string] 								- default group
- */
+// printOutput prints the data in different formats according to the situation
 func printOutput(level int, kind, fullPath string, currentPerm currentPermissions, defaultPerm defaultPermissions, verbose bool) {
 	if verbose {
 		fullPath = filepath.Base(fullPath)
@@ -128,7 +97,7 @@ func printOutput(level int, kind, fullPath string, currentPerm currentPermission
 	}
 }
 
-// Colorize Returns a string using ansi colors
+// Colorize returns a string using ansi colors
 func Colorize(color, s string) string {
 	const (
 		esc        = "\x1b"
