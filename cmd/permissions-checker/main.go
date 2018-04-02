@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -59,15 +60,15 @@ func main() {
 	flag.Parse()
 
 	// Unifies the format eliminating the last "/" if exists
-	search.baseDirectory = strings.TrimSuffix(search.baseDirectory, "/")
-	excludeStr = strings.TrimSuffix(excludeStr, "/")
+	search.baseDirectory = strings.TrimSuffix(filepath.Clean(search.baseDirectory), "/")
+	excludeStr = strings.TrimSuffix(filepath.Clean(excludeStr), "/")
 
 	search.exclude = regexp.MustCompile(excludeStr)
 
 	// Checks if the default permissions introduced by the user are in the Linux format
 	defLinuxFormat := regexp.MustCompile("^[-rwx]{9,10}$")
 	if !defLinuxFormat.MatchString(defaultPerm.file) || !defLinuxFormat.MatchString(defaultPerm.dir) {
-		log.Fatalf("file_default and dir_default should be in the Linux format (i.e. \"rw-rw-r--\")\n")
+		log.Fatalf(`file_default and dir_defaultshould be in the Linux format (i.e. "rw-rw-r--")`)
 		os.Exit(2)
 	}
 
