@@ -2,7 +2,7 @@
 // server or local machine to detect any possible issues with the
 // permissions configuration comparing the current permissions,
 // owner and groups with those that should have.
-package permissionschecks
+package main
 
 import (
 	"flag"
@@ -96,5 +96,5 @@ Starting checks with these parameters:
 `, search.baseDirectory, defaultPerm.file, defaultPerm.dir, defaultPerm.owner, defaultPerm.group, search.exclude, search.hidden, verbose)
 
 	fmt.Printf(Colorize("blue", "\n-- Checking permissions --\n"))
-	FindRecursive(search.baseDirectory, defaultPerm, search, verbose, 0)
+	FindPermissions(search.baseDirectory, defaultPerm, search, verbose)
 }
