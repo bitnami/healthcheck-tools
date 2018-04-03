@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -21,7 +22,7 @@ type currentPermissions struct {
 }
 
 // FindPermissions iterates in a directory showing permissions in a recursive way
-func FindPermissions(dir string, defaultPerm defaultPermissions, search searchSettings, verbose bool) {
+func FindPermissions(dir string, defaultPerm defaultPermissions, search searchSettings, verbose bool) error {
 	level := 0
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		// In verbose mode, we are printing the output in a hierarchical way
@@ -31,13 +32,23 @@ func FindPermissions(dir string, defaultPerm defaultPermissions, search searchSe
 		name := info.Name()
 		if search.exclude.MatchString(path) {
 			if verbose {
-				fmt.Printf(Colorize("yellow", fmt.Sprintf("%sExcluding %s\n", strings.Repeat("  ", level), name)))
+				fmt.Println(Colorize("yellow", fmt.Sprintf("%sExcluding %s", strings.Repeat("  ", level), name)))
 			}
 		} else {
 			if search.hidden || !strings.HasPrefix(name, ".") {
 				mode := info.Mode()
-				currentOwner, _ := user.LookupId(fmt.Sprint(info.Sys().(*syscall.Stat_t).Uid))
-				currentGroup, _ := user.LookupGroupId(fmt.Sprint(info.Sys().(*syscall.Stat_t).Gid))
+				uid, gid := getFileOwner(info)
+				currentOwner, errOwner := user.LookupId(uid)
+				currentGroup, errGroup := user.LookupGroupId(gid)
+
+				if errOwner != nil {
+					currentOwner.Username = "unknown"
+					log.Printf("Can not obtain %s owner\n", name)
+				}
+				if errGroup != nil {
+					currentGroup.Name = "unknown"
+					log.Printf("Can not obtain %s group\n", name)
+				}
 
 				currentPerm := currentPermissions{
 					permissions:     mode.Perm(),
@@ -66,8 +77,9 @@ func FindPermissions(dir string, defaultPerm defaultPermissions, search searchSe
 	})
 
 	if err != nil {
-		fmt.Printf("error walking the path %q: %v\n", dir, err)
+		log.Printf("Error walking the path %q: %v\n", dir, err)
 	}
+	return err
 }
 
 // checkPermissions returns true if the permissions are correct (false in another case)
@@ -82,16 +94,20 @@ func printOutput(level int, kind, fullPath string, currentPerm currentPermission
 	}
 	hierarchy := strings.Repeat("  ", level)
 
-	if currentPerm.hasCorrectPermissions && currentPerm.hasCorrectOwner && currentPerm.hasCorrectGroup { // Everything correct
-		if verbose {
-			fmt.Printf("%s(%s) %s %s %s %s\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group)
+	if currentPerm.hasCorrectPermissions {
+		if currentPerm.hasCorrectOwner && currentPerm.hasCorrectGroup { // Everything correct
+			if verbose {
+				fmt.Printf("%s(%s) %s %s %s %s\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group)
+			}
+		} else { // Permissions correct, fails owner or group
+			fmt.Println(Colorize("red", fmt.Sprintf("%s(%s) %s %s %s %s (expected %s %s)", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)))
 		}
-	} else if currentPerm.hasCorrectPermissions && (!currentPerm.hasCorrectOwner || !currentPerm.hasCorrectGroup) { // Permissions correct, fails owner or group
-		fmt.Printf(Colorize("red", fmt.Sprintf("%s(%s) %s %s %s %s (expected %s %s)\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)))
-	} else if !currentPerm.hasCorrectPermissions && (currentPerm.hasCorrectOwner && currentPerm.hasCorrectGroup) { // Permissions wrong, owner and group correct
-		fmt.Printf(Colorize("red", fmt.Sprintf("%s(%s) %s %s (expected %s) %s %s\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group)))
-	} else if !currentPerm.hasCorrectPermissions && (!currentPerm.hasCorrectOwner || !currentPerm.hasCorrectGroup) { // Nothing correct
-		fmt.Printf(Colorize("red", fmt.Sprintf("%s(%s) %s %s (expected %s) %s %s (expected %s %s)\n", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)))
+	} else if !currentPerm.hasCorrectPermissions {
+		if currentPerm.hasCorrectOwner && currentPerm.hasCorrectGroup { // Permissions wrong, owner and group correct
+			fmt.Println(Colorize("red", fmt.Sprintf("%s(%s) %s %s (expected %s) %s %s", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group)))
+		} else { // Nothing correct
+			fmt.Println(Colorize("red", fmt.Sprintf("%s(%s) %s %s (expected %s) %s %s (expected %s %s)", hierarchy, kind, fullPath, currentPerm.permissions, currentPerm.defaultPermissions, currentPerm.owner, currentPerm.group, defaultPerm.owner, defaultPerm.group)))
+		}
 	}
 }
 
@@ -106,12 +122,21 @@ func Colorize(color, s string) string {
 	)
 	result := s
 
-	if strings.Compare(color, "blue") == 0 {
+	switch color {
+	case "blue":
 		result = fmt.Sprintf("%s%s%s", ansiBlue, string(s), ansiReset)
-	} else if strings.Compare(color, "red") == 0 {
+	case "red":
 		result = fmt.Sprintf("%s%s%s", ansiRed, string(s), ansiReset)
-	} else if strings.Compare(color, "yellow") == 0 {
+	case "yellow":
 		result = fmt.Sprintf("%s%s%s", ansiYellow, string(s), ansiReset)
 	}
+
 	return result
+}
+
+// Get file owner (uid and gid)
+func getFileOwner(info os.FileInfo) (uid, gid string) {
+	uid = fmt.Sprint(info.Sys().(*syscall.Stat_t).Uid)
+	gid = fmt.Sprint(info.Sys().(*syscall.Stat_t).Gid)
+	return uid, gid
 }

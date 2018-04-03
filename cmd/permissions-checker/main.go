@@ -16,8 +16,9 @@ import (
 
 var (
 	// VERSION will be overwritten automatically by the build system
-	VERSION    = "devel"
-	excludeStr string
+	VERSION        = "devel"
+	excludeStr     string
+	unixPermRegexp = regexp.MustCompile("^[-rwx]{9}$")
 )
 
 // Data regarding default permissions
@@ -54,14 +55,12 @@ func main() {
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
 	flag.Parse()
 
-	// Unifies the format eliminating the last "/" if exists
+	// Standardize the format eliminating the last "/" if exists
 	search.baseDirectory = strings.TrimSuffix(filepath.Clean(search.baseDirectory), "/")
-	excludeStr = strings.TrimSuffix(filepath.Clean(excludeStr), "/")
 
 	search.exclude = regexp.MustCompile(excludeStr)
 
 	// Checks if the default permissions introduced by the user are in the Unix format
-	unixPermRegexp := regexp.MustCompile("^[-rwx]{9}$")
 	checks := []struct {
 		flag  string
 		value string
@@ -95,6 +94,6 @@ Starting checks with these parameters:
 ==================================================
 `, search.baseDirectory, defaultPerm.file, defaultPerm.dir, defaultPerm.owner, defaultPerm.group, search.exclude, search.hidden, verbose)
 
-	fmt.Printf(Colorize("blue", "\n-- Checking permissions --\n"))
+	fmt.Println(Colorize("blue", "\n-- Checking permissions --"))
 	FindPermissions(search.baseDirectory, defaultPerm, search, verbose)
 }
