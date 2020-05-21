@@ -19,15 +19,18 @@ var (
 
 func main() {
 	var (
-		installDir string
-		app        string
-		recipient  string
-		getVersion bool
+		installDir     string
+		app            string
+		recipient      string
+		getVersion     bool
+		secureOutput   bool
+		passwordOutput string
 	)
 	flag.StringVar(&installDir, "install_dir", "/opt/bitnami", "Installation Directory")
 	flag.StringVar(&app, "application", "", "Application")
 	flag.StringVar(&recipient, "mail_recipient", defaultRecipient, fmt.Sprintf("Mail Recipient (%s by default)", defaultRecipient))
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
+	flag.BoolVar(&secureOutput, "secure_output", false, "Hide SMTTP password in output")
 	smtp := apps.NewSMTPSettingsFromFlags(flag.CommandLine)
 	flag.Parse()
 
@@ -66,6 +69,12 @@ Obtaining SMTP configuration for app: %q
 		recipientText = fmt.Sprintf("%s (invalid mail account, use -mail_recipient lag to indicate a valid one)", defaultRecipient)
 	}
 
+	if secureOutput {
+		passwordOutput = "xxxxxx"
+	} else {
+		passwordOutput = smtp.Pass
+	}
+
 	fmt.Printf(`
 ======================================
 SMTP CHECKS
@@ -77,7 +86,7 @@ Using SMTP credentials:
   - SMTP Password: %q
   - Mail Recipient: %q
 
-`, smtp.Host, smtp.Port, smtp.User, smtp.Pass, recipientText)
+`, smtp.Host, smtp.Port, smtp.User, passwordOutput, recipientText)
 
 	var errors error
 
