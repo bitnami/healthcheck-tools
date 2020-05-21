@@ -217,14 +217,14 @@ func TestCertKeyMatch(t *testing.T) {
 }
 
 func TestGetServerCertificateDomain(t *testing.T) {
-	httpsConnection := HTTPSConnectionInfo{"www.bitnami.com", 443}
+	httpsConnection := HTTPSConnectionInfo{"bitnami.com", 443}
     t.Run("Check HTTPS Connection", func(t *testing.T) {
 		checkResult, err := httpsConnection.getServerCertificateDomain()
 		if err != nil {
 			t.Errorf("Error creating HTTPS request: %s", err)
 		}
-		if checkResult != "www.bitnami.com" {
-			t.Errorf("Incorrect HTTPS Server certificate detected, expected: www.bitnami.com, got: %s",
+		if checkResult != "bitnami.com" {
+			t.Errorf("Incorrect HTTPS Server certificate detected, expected: bitnami.com, got: %s",
 				checkResult)
 		}
 	})
