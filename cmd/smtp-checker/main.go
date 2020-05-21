@@ -19,12 +19,11 @@ var (
 
 func main() {
 	var (
-		installDir     string
-		app            string
-		recipient      string
-		getVersion     bool
-		secureOutput   bool
-		passwordOutput string
+		installDir   string
+		app          string
+		recipient    string
+		getVersion   bool
+		secureOutput bool
 	)
 	flag.StringVar(&installDir, "install_dir", "/opt/bitnami", "Installation Directory")
 	flag.StringVar(&app, "application", "", "Application")
@@ -69,9 +68,8 @@ Obtaining SMTP configuration for app: %q
 		recipientText = fmt.Sprintf("%s (invalid mail account, use -mail_recipient lag to indicate a valid one)", defaultRecipient)
 	}
 
-	if secureOutput {
-		passwordOutput = "xxxxxx"
-	} else {
+	passwordOutput := "xxxxxx"
+	if !secureOutput {
 		passwordOutput = smtp.Pass
 	}
 
