@@ -30,7 +30,7 @@ func main() {
 	flag.StringVar(&app, "application", "", "Application")
 	flag.StringVar(&recipient, "mail_recipient", defaultRecipient, fmt.Sprintf("Mail Recipient (%s by default)", defaultRecipient))
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
-	flag.BoolVar(&secureOutput, "secure_output", false, "Hide SMTTP password in output")
+	flag.BoolVar(&secureOutput, "secure_output", false, "Hide SMTP password in output")
 	smtp := apps.NewSMTPSettingsFromFlags(flag.CommandLine)
 	flag.Parse()
 
