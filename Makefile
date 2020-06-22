@@ -4,7 +4,6 @@ TOOLS := $(shell ls ./cmd)
 all:
 	make $(TOOLS)
 
-
 $(TOOLS):
 	make -C ./cmd/$@
 
@@ -53,4 +52,3 @@ godep-restore-%:
 get-build-deps:
 	@echo "+ Downloading build dependencies"
 	@go get github.com/tools/godep
-	@go get github.com/golang/lint/golint

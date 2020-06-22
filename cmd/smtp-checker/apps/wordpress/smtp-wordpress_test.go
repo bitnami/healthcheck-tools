@@ -48,7 +48,7 @@ func TestParseWPDatabaseConfig(t *testing.T) {
 			t.Errorf("Incorrect database host detected, expected: localhost, got: %s", database.Host)
 		}
 		if database.Port != 3306 {
-			t.Errorf("Incorrect database port detected, expected: 3306, got: %s", database.Port)
+			t.Errorf("Incorrect database port detected, expected: 3306, got: %d", database.Port)
 		}
 		if database.Name != "bitnami_wordpress" {
 			t.Errorf("Incorrect database name detected, expected: bitnami_wordpress, got: %s", database.Name)
@@ -87,7 +87,7 @@ func TestObtainSMTP(t *testing.T) {
 			t.Errorf("Incorrect SMTP host detected, expected: smtp.gmail.com, got: %s", smtp.Host)
 		}
 		if smtp.Port != 587 {
-			t.Errorf("Incorrect SMTP port detected, expected: 587, got: %s", smtp.Port)
+			t.Errorf("Incorrect SMTP port detected, expected: 587, got: %d", smtp.Port)
 		}
 		if smtp.Pass != "XXXXXXXX" {
 			t.Errorf("Incorrect SMTP password detected, expected: XXXXXXXX, got: %s", smtp.Pass)
