@@ -52,4 +52,3 @@ godep-restore-%:
 get-build-deps:
 	@echo "+ Downloading build dependencies"
 	@go get github.com/tools/godep
-	@go get github.com/golang/x/lint
