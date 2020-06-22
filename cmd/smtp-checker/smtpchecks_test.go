@@ -7,15 +7,6 @@ import (
 	"testing"
 )
 
-func TestRunConnectivityChecks(t *testing.T) {
-	t.Run("Check connectivity with SMTP server", func(t *testing.T) {
-		err := RunConnectivityChecks("smtp.gmail.com", 25)
-		if err != nil {
-			t.Errorf("error connecting to smtp server: %v", err)
-		}
-	})
-}
-
 func TestRunTLSConnectivityChecks(t *testing.T) {
 	t.Run("Check connectivity with SMTP server via TLS", func(t *testing.T) {
 		err := RunTLSConnectivityChecks("smtp.gmail.com", 465)
