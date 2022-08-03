@@ -11,8 +11,7 @@ $> go get github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker
 
 ```
 $> git clone https://github.com/bitnami-labs/healthcheck-tools.git
-$> cd cmd/smtp-checker
-$> make
+$> make smtp-checker-linux-amd64
 ```
 
 ## Basic usage

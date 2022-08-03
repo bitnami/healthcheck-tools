@@ -7,15 +7,15 @@ import (
 	"os"
 
 	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
-	"github.com/mmikulicic/multierror"
+	"github.com/mkmik/multierror"
 )
 
 const defaultRecipient = "test@example.com"
 
-var (
-	// VERSION will be overwritten automatically by the build system
-	VERSION = "devel"
-)
+// These variables will be overwritten automatically by the build system
+var VERSION = "devel"
+var BUILD_DATE = ""
+var COMMIT = ""
 
 func main() {
 	var (
@@ -34,7 +34,9 @@ func main() {
 	flag.Parse()
 
 	if getVersion {
-		fmt.Println(VERSION)
+		fmt.Printf("smtp-checker %s\n", VERSION)
+		fmt.Printf("Built on: %s\n", BUILD_DATE)
+		fmt.Printf("Commit: %s\n", COMMIT)
 		os.Exit(0)
 	}
 

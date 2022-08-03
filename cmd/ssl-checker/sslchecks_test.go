@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"testing"
@@ -9,27 +8,26 @@ import (
 
 func testEq(a, b []CertificatePairInfo) bool {
 
-    if a == nil && b == nil {
-        return true;
-    }
+	if a == nil && b == nil {
+		return true
+	}
 
-    if a == nil || b == nil {
-        return false;
-    }
+	if a == nil || b == nil {
+		return false
+	}
 
-    if len(a) != len(b) {
-        return false
-    }
+	if len(a) != len(b) {
+		return false
+	}
 
-    for i := range a {
-        if a[i] != b[i] {
-            return false
-        }
-    }
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
 
-    return true
+	return true
 }
-
 
 func TestGetActiveCertificatePairs(t *testing.T) {
 	apacheRoot := "/opt/bitnami/apache2/"
@@ -46,30 +44,30 @@ SSLRandomSeed connect builtin
     SSLCertificateFile "../apps/wordpress/conf/certs/server.crt"
     SSLCertificateKeyFile "../apps/wordpress/conf/certs/server.key"
 `, []CertificatePairInfo{{"/opt/bitnami/apache2/conf/httpd.conf",
-	"/opt/bitnami/apps/wordpress/conf/certs/server.crt",
-	"/opt/bitnami/apps/wordpress/conf/certs/server.key"}}},
-{`
+			"/opt/bitnami/apps/wordpress/conf/certs/server.crt",
+			"/opt/bitnami/apps/wordpress/conf/certs/server.key"}}},
+		{`
     SSLCertificateFile "../apps/wordpress/conf/certs/server.crt"
    # SSLCertificateKeyFile "../apps/wordpress/conf/certs/server.key"
 `, []CertificatePairInfo{}},
-{`
+		{`
     SSLCertificateKeyFile "../apps/wordpress/conf/certs/server.key"
     SSLCertificateFile "../apps/wordpress/conf/certs/server.crt"
    # SSLCertificateKeyFile "../apps/wordpress/conf/certs/server3.key"
     SSLCertificateFile "../apps/wordpress/conf/certs/server2.crt"
     SSLCertificateKeyFile "../apps/wordpress/conf/certs/server2.key"
 `, []CertificatePairInfo{{"/opt/bitnami/apache2/conf/httpd.conf",
-	"/opt/bitnami/apps/wordpress/conf/certs/server.crt",
-	"/opt/bitnami/apps/wordpress/conf/certs/server.key"},
-	{"/opt/bitnami/apache2/conf/httpd.conf",
-		"/opt/bitnami/apps/wordpress/conf/certs/server2.crt",
-		"/opt/bitnami/apps/wordpress/conf/certs/server2.key"}}},
+			"/opt/bitnami/apps/wordpress/conf/certs/server.crt",
+			"/opt/bitnami/apps/wordpress/conf/certs/server.key"},
+			{"/opt/bitnami/apache2/conf/httpd.conf",
+				"/opt/bitnami/apps/wordpress/conf/certs/server2.crt",
+				"/opt/bitnami/apps/wordpress/conf/certs/server2.key"}}},
 	}
 
 	t.Run("Check Detected SSL files", func(t *testing.T) {
 		for _, tt := range testData {
 			detectedCerts := getActiveCertificatePairs(apacheConf, tt.in, apacheRoot)
-			if (!testEq(tt.out, detectedCerts)) {
+			if !testEq(tt.out, detectedCerts) {
 				t.Errorf("Detected certs incorrect for configuration: %s\n\n expected: %q, got: %q", tt.in,
 					tt.out, detectedCerts)
 			}
@@ -152,8 +150,8 @@ Up/yZWljQkrfRz/hA1/x3xN8+UCJRBxNXME1rGbb79xb4/5pRZ0CEA==
 -----END RSA PRIVATE KEY-----`
 
 func TestGetCertificateDomainName(t *testing.T) {
-    t.Run("Check Detected domain", func(t *testing.T) {
-		cpi:= CertificatePairInfo{"/opt/bitnami/apache2/conf/httpd.conf",
+	t.Run("Check Detected domain", func(t *testing.T) {
+		cpi := CertificatePairInfo{"/opt/bitnami/apache2/conf/httpd.conf",
 			"/opt/bitnami/apps/wordpress/conf/certs/server.crt",
 			"/opt/bitnami/apps/wordpress/conf/certs/server.key"}
 		checkResult, err := cpi.getCertificateDomainName([]byte(testCertificate))
@@ -167,7 +165,7 @@ func TestGetCertificateDomainName(t *testing.T) {
 }
 
 func createTemporaryFile(content, prefix string) *os.File {
-	tmpFile, err := ioutil.TempFile("", prefix)
+	tmpFile, err := os.CreateTemp("", prefix)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -178,12 +176,11 @@ func createTemporaryFile(content, prefix string) *os.File {
 }
 
 func TestCertKeyMatch(t *testing.T) {
-    t.Run("Check Cert and Key Match", func(t *testing.T) {
+	t.Run("Check Cert and Key Match", func(t *testing.T) {
 
 		tmpCert := createTemporaryFile(testCertificate, "cert")
 		tmpKey := createTemporaryFile(testKey, "key")
 		tmpKeyNotMatched := createTemporaryFile(testKeyNotMatched, "key")
-
 
 		defer os.Remove(tmpCert.Name())
 		defer os.Remove(tmpKey.Name())
@@ -218,7 +215,7 @@ func TestCertKeyMatch(t *testing.T) {
 
 func TestGetServerCertificateDomain(t *testing.T) {
 	httpsConnection := HTTPSConnectionInfo{"bitnami.com", 443}
-    t.Run("Check HTTPS Connection", func(t *testing.T) {
+	t.Run("Check HTTPS Connection", func(t *testing.T) {
 		checkResult, err := httpsConnection.getServerCertificateDomain()
 		if err != nil {
 			t.Errorf("Error creating HTTPS request: %s", err)

@@ -1,11 +1,11 @@
 package redmine
 
 import (
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
-	"io/ioutil"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
 )
 
 var testRedmineConfig = `
@@ -45,7 +45,7 @@ func TestParseConfig(t *testing.T) {
 }
 
 func createTemporaryFile(content, prefix string) *os.File {
-	tmpFile, err := ioutil.TempFile("", prefix)
+	tmpFile, err := os.CreateTemp("", prefix)
 	if err != nil {
 		log.Fatal(err)
 	}

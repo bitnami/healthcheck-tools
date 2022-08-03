@@ -1,9 +1,10 @@
 package redmine
 
 import (
+	"path/filepath"
+
 	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
 	"github.com/juju/errors"
-	"path/filepath"
 )
 
 const (

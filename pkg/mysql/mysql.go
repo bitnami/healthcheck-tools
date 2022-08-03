@@ -4,6 +4,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+
 	// mysql implementation of go's database/sql/driver interface.
 	_ "github.com/go-sql-driver/mysql"
 )
