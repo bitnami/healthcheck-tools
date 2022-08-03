@@ -1,54 +1,55 @@
-ROOT_PKG=github.com/bitnami-labs/healthcheck-tool
-TOOLS := $(shell ls ./cmd)
+.PHONY: all build clean download get-build-deps vet lint test
+
+# Load relative to the common.mk file
+include $(dir $(lastword $(MAKEFILE_LIST)))/vars.mk
+
+include ./vars.mk
 
 all:
-	make $(TOOLS)
+	@$(MAKE) get-build-deps
+	@$(MAKE) download
+	@$(MAKE) vet
+	@$(MAKE) lint
+	@$(MAKE) build
+	@$(MAKE) test
 
-$(TOOLS):
-	make -C ./cmd/$@
+define binary
+$(1)-$(2)-$(3)$(4):
+	@GOOS=$(2) GOARCH=$(3) go build -ldflags=$(LDFLAGS) -o $(BUILD_DIR)/$$@ ./cmd/$(1)
+endef
 
-build:
-	@$(MAKE) -s $(addprefix build-, $(TOOLS))
+define binaries
+$(call binary,ssl-checker,$1,$2,$3)
+$(call binary,smtp-checker,$1,$2,$3)
+endef
 
-build-%:
-	make -C cmd/$(*F) build
+$(eval $(call binaries,linux,amd64,))
+$(eval $(call binaries,linux,arm64,))
+$(eval $(call binaries,darwin,amd64,))
+$(eval $(call binaries,windows,amd64,.exe))
 
-test:
-	@$(MAKE) -s $(addprefix test-, $(TOOLS))
-
-test-%:
-	make -C cmd/$(*F) test
-
-lint:
-	@$(MAKE) -s $(addprefix lint-, $(TOOLS))
-
-lint-%:
-	make -C cmd/$(*F) test
-
-install:
-	@$(MAKE) -s $(addprefix install-, $(TOOLS))
-
-install-%:
-	make -C cmd/$(*F) install
+build: ssl-checker-linux-amd64 smtp-checker-linux-amd64
 
 clean:
-	@$(MAKE) -s $(addprefix clean-, $(TOOLS))
+	@rm -rf $(BUILD_DIR)
 
-clean-%:
-	make -C cmd/$(*F) clean
-
-godep-save:
-	@$(MAKE) -s $(addprefix godep-save-, $(TOOLS))
-
-godep-save-%:
-	make -C cmd/$(*F) godep-save
-
-godep-restore:
-	@$(MAKE) -s $(addprefix godep-restore-, $(TOOLS))
-
-godep-restore-%:
-	make -C cmd/$(*F) godep-restore
+download:
+	$(GO_MOD) download
 
 get-build-deps:
 	@echo "+ Downloading build dependencies"
-	@go get github.com/tools/godep
+	@go install golang.org/x/tools/cmd/goimports@latest
+	@go install honnef.co/go/tools/cmd/staticcheck@latest
+
+vet:
+	@echo "+ Vet"
+	@go vet ./...
+
+lint:
+	@echo "+ Linting package"
+	@staticcheck ./...
+	$(call fmtcheck, .)
+
+test:
+	@echo "+ Testing package"
+	$(GO_TEST) ./...

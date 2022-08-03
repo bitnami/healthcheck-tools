@@ -1,7 +1,6 @@
 package wordpress
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"testing"
@@ -99,7 +98,7 @@ func TestObtainSMTP(t *testing.T) {
 }
 
 func createTemporaryFile(content, prefix string) *os.File {
-	tmpFile, err := ioutil.TempFile("", prefix)
+	tmpFile, err := os.CreateTemp("", prefix)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -7,10 +7,10 @@ import (
 	"os"
 )
 
-var (
-	// VERSION will be overwritten automatically by the build system
-	VERSION = "devel"
-)
+// These variables will be overwritten automatically by the build system
+var VERSION = "devel"
+var BUILD_DATE = ""
+var COMMIT = ""
 
 func main() {
 	var apacheRoot string
@@ -26,7 +26,11 @@ func main() {
 	flag.BoolVar(&getVersion, "version", false, "Show current version")
 	flag.Parse()
 	if getVersion {
-		fmt.Println(VERSION)
+		fmt.Printf("smtp-checker %s\n", VERSION)
+		fmt.Printf("Built on: %s\n", BUILD_DATE)
+		fmt.Printf("Commit: %s\n", COMMIT)
+		os.Exit(0)
+
 		os.Exit(0)
 	}
 	if hostname == "" {

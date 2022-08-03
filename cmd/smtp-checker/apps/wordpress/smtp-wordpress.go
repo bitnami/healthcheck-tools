@@ -2,15 +2,16 @@ package wordpress
 
 import (
 	"fmt"
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
-	"github.com/bitnami-labs/healthcheck-tools/pkg/mysql"
-	"github.com/juju/errors"
-	"github.com/yvasiyarov/php_session_decoder/php_serialize"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
+	"github.com/bitnami-labs/healthcheck-tools/pkg/mysql"
+	"github.com/juju/errors"
+	"github.com/yvasiyarov/php_session_decoder/php_serialize"
 )
 
 var (
@@ -84,7 +85,7 @@ func getProperty(buffer []byte, property string) string {
 }
 
 func parseWPDatabaseConfig(configFile string) (mysql.Database, error) {
-	source, err := ioutil.ReadFile(configFile)
+	source, err := os.ReadFile(configFile)
 	if err != nil {
 		return mysql.Database{}, errors.Errorf("error reading config file: %v", err)
 	}

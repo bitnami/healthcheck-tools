@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
 )
 
 func TestRunTLSConnectivityChecks(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"regexp"
 
@@ -64,12 +64,7 @@ Key file: %q`, cpi.apacheConfPath, cpi.certPath, cpi.keyPath)
 
 // getEncodedCertificate opens the certificate and returns its byte sequence
 func (cpi CertificatePairInfo) getEncodedCertificate() ([]byte, error) {
-	return ioutil.ReadFile(cpi.certPath)
-}
-
-// getEncodedKey opens the key and returns its byte sequence
-func (cpi CertificatePairInfo) getEncodedKey() ([]byte, error) {
-	return ioutil.ReadFile(cpi.certPath)
+	return os.ReadFile(cpi.certPath)
 }
 
 // getDecodedCertificateInfo returns the certificate domain name or an error if it cannot be opened or decoded
@@ -97,7 +92,7 @@ func (cpi CertificatePairInfo) printCertificateDomain() error {
 }
 
 // getCertKeyMatchInfo returns, for each active certificate-key pair, whether they match or not
-func (cpi CertificatePairInfo) certKeyMatch() (bool) {
+func (cpi CertificatePairInfo) certKeyMatch() bool {
 	res := true
 	_, err := tls.LoadX509KeyPair(cpi.certPath, cpi.keyPath)
 	if err != nil {

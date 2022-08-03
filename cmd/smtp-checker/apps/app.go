@@ -3,8 +3,9 @@ package apps
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/ghodss/yaml"
-	"io/ioutil"
 )
 
 // Application is a structure that contains the info
@@ -41,7 +42,7 @@ type ApplicationConfig interface {
 
 // UnmarshalYAMLFile reads a config file and unmarshals it into a config struct
 func UnmarshalYAMLFile(configFile string, config interface{}) error {
-	source, err := ioutil.ReadFile(configFile)
+	source, err := os.ReadFile(configFile)
 	if err != nil {
 		return fmt.Errorf("error reading config file: %v", err)
 	}
