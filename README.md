@@ -18,5 +18,5 @@ $> make
 
 The tools are located in the *cmd* folder. Each tool has its own README.md with basic instructions.
 
-  - [SSL Checker](https://github.com/bitnami-labs/healthcheck-tools/tree/master/cmd/ssl-checker)
-  - [SMTP Checker](https://github.com/bitnami-labs/healthcheck-tools/tree/master/cmd/smtp-checker)
+  - [SSL Checker](https://github.com/bitnami-labs/healthcheck-tools/tree/main/cmd/ssl-checker)
+  - [SMTP Checker](https://github.com/bitnami-labs/healthcheck-tools/tree/main/cmd/smtp-checker)
