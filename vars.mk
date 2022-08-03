@@ -6,7 +6,7 @@ BUILD_DIR := $(abspath ./out)
 TOOL_NAME ?= $(shell basename $(CURDIR))
 TOOL_PATH ?= $(BUILD_DIR)/$(TOOL_NAME)
 
-GIT_VERSION := $(shell git describe --always)
+GIT_VERSION := $(shell git describe --always --tags)
 GIT_DATE := $(shell date -u '+%Y-%m-%d %I:%M:%S UTC' 2> /dev/null)
 GIT_HASH := $(shell git rev-parse HEAD 2> /dev/null)
 LDFLAGS="-X 'main.VERSION=$(GIT_VERSION)' -X 'main.BUILD_DATE=$(GIT_DATE)' -X 'main.COMMIT=$(GIT_HASH)' -s -w"
