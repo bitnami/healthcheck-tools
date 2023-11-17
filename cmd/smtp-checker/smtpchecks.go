@@ -13,9 +13,9 @@ import (
 
 	"github.com/andybalholm/crlf"
 	"github.com/beevik/ntp"
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps/redmine"
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps/wordpress"
+	"github.com/bitnami/healthcheck-tools/cmd/smtp-checker/apps"
+	"github.com/bitnami/healthcheck-tools/cmd/smtp-checker/apps/redmine"
+	"github.com/bitnami/healthcheck-tools/cmd/smtp-checker/apps/wordpress"
 	"github.com/juju/errors"
 )
 

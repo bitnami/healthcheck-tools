@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
+	"github.com/bitnami/healthcheck-tools/cmd/smtp-checker/apps"
 )
 
 var testRedmineConfig = `

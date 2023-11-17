@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
+	"github.com/bitnami/healthcheck-tools/cmd/smtp-checker/apps"
 	"github.com/mkmik/multierror"
 )
 

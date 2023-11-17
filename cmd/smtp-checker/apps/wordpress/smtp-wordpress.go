@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker/apps"
-	"github.com/bitnami-labs/healthcheck-tools/pkg/mysql"
+	"github.com/bitnami/healthcheck-tools/cmd/smtp-checker/apps"
+	"github.com/bitnami/healthcheck-tools/pkg/mysql"
 	"github.com/juju/errors"
 	"github.com/yvasiyarov/php_session_decoder/php_serialize"
 )
