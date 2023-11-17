@@ -1,4 +1,4 @@
-module github.com/bitnami-labs/healthcheck-tools
+module github.com/bitnami/healthcheck-tools
 
 go 1.19
 

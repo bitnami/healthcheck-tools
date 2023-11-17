@@ -9,7 +9,7 @@ import (
 	"path"
 	"regexp"
 
-	"github.com/bitnami-labs/healthcheck-tools/pkg/apache"
+	"github.com/bitnami/healthcheck-tools/pkg/apache"
 )
 
 // CertificatePairInfo contains paths of an active certificate-key path

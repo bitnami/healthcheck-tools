@@ -4,13 +4,13 @@ _smtp-checker_ performs a set of health checks in your web application to detect
 ## Installation
 
 ```
-$> go get github.com/bitnami-labs/healthcheck-tools/cmd/smtp-checker
+$> go get github.com/bitnami/healthcheck-tools/cmd/smtp-checker
 ```
 
 ## Building from source
 
 ```
-$> git clone https://github.com/bitnami-labs/healthcheck-tools.git
+$> git clone https://github.com/bitnami/healthcheck-tools.git
 $> make smtp-checker-linux-amd64
 ```
 
