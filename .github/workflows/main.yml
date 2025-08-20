@@ -2,18 +2,7 @@ name: CI
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches:
-      - main
-
-  release:
-    types: [published]
-
-  pull_request:
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  pull_request_target:
 # Remove all permissions by default
 permissions: {}
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -37,13 +26,6 @@ jobs:
         run: make vet
       - name: Lint
         run: make lint
-      - name: Test
-        run: make test
-        env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
       - name: Build
         run: |
           set -ex
@@ -53,61 +35,11 @@ jobs:
             make ${tool}-darwin-amd64
             make ${tool}-windows-amd64.exe
           done
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: built-binaries
-          path: |
-            out/*
-  release:
-    needs: [ 'build-and-test' ]
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          path: ./artifacts
-      - name: Set tag name
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: Release
-        run: |
-          set -e
-          create_digest_file() {
-              local digest_file=${1:?You must provide the digest file path}
-              shift
-              for file in "$@"; do
-                (
-                   cd "$(dirname "$file")"
-                   sha256sum "$(basename "$file")"
-                ) >> "$digest_file"
-              done
-          }
-          assets=( ./artifacts/built-binaries/* )
-
-          tag_name="${{ steps.vars.outputs.tag }}"
-          checksums_file="${tag_name}_checksums.txt"
-          create_digest_file "$checksums_file" "${assets[@]}"
-          assets+=( "$checksums_file" )
-          if gh release view "$tag_name" >/dev/null 2>/dev/null; then
-            echo "Release $tag_name already exists. Updating"
-            gh release upload "$tag_name" "${assets[@]}"
-          else
-            echo "Creating new release $tag_name"
-            # Format checksums for the release text
-            printf '```\n%s\n```' "$(<"$checksums_file")" > release.txt
-            gh release create -t "$tag_name" "$tag_name" -F release.txt "${assets[@]}"
-          fi
+      - name: Test
+        if: contains(github.event.pull_request.labels.*.name, 'verify') || (github.event.action == 'labeled' && github.event.label.name == 'verify')
+        run: make test
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  notify:
-    name: Send notification
-    needs:
-      - release
-    if: ${{ always() && needs.release.result == 'failure' }}
-    uses: bitnami/support/.github/workflows/gchat-notification.yml@main
-    with:
-      workflow: ${{ github.workflow }}
-      job-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-    secrets:
-      webhook-url: ${{ secrets.GCHAT_CONTENT_ALERTS_WEBHOOK_URL }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
