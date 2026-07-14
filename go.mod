@@ -1,6 +1,6 @@
 module github.com/bitnami/healthcheck-tools
 
-go 1.19
+go 1.25.0
 
 require (
 	github.com/andybalholm/crlf v0.0.0-20171020200849-670099aa064f
@@ -14,8 +14,8 @@ require (
 
 require (
 	github.com/stretchr/testify v1.8.4 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
